@@ -1,0 +1,34 @@
+# install az cli
+az login
+az account set --subscription "Azure subscription 1"
+
+#Step 1 - Create an Azure Container Registry
+#SKUs include Basic, Standard and Premium (speed, replication, adv security features)
+#https://docs.microsoft.com/en-us/azure/container-registry/container-registry-skus#sku-features-and-limits
+$ACR_NAME='bingowithcardsacr'  #<---- THIS NEEDS TO BE GLOBALLY unique inside of Azure
+az acr create --resource-group angular-ui-rg --name $ACR_NAME --sku Standard
+
+#Step 2 - Log into ACR to push containers...this will use our current azure cli login context
+az acr login --name $ACR_NAME
+
+
+#Step 3 - Get the loginServer which is used in the image tag
+$ACR_LOGINSERVER=$(az acr show --name $ACR_NAME --query loginServer --output tsv)
+echo $ACR_LOGINSERVER
+
+
+#Step 4 - Tag the container image using the login server name. This doesn't push it to ACR, that's the next step.
+#[loginUrl]/[repository:][tag]
+docker tag bingoangularwithcards:latest $ACR_LOGINSERVER/bingoangularwithcards:latest
+docker image ls $ACR_LOGINSERVER/bingoangularwithcards:latest
+docker image ls
+
+
+#Step 5 - Push image to Azure Container Registry
+docker push $ACR_LOGINSERVER/bingoangularwithcards:latest
+
+
+#Step 6 - Get a listing of the repositories and images/tags in our Azure Container Registry
+az acr repository list --name $ACR_NAME --output table
+az acr repository show-tags --name $ACR_NAME --repository webapdockerdemo --output table
+
