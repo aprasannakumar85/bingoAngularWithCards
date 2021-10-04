@@ -69,7 +69,9 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "bingo:build"
+            "browserTarget": "bingo:build",
+            "port": 80,
+            "disableHostCheck": true
           },
           "configurations": {
             "production": {

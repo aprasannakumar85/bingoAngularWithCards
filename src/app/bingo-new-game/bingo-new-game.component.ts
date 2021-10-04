@@ -501,7 +501,9 @@ export class BingoNewGameComponent implements OnInit, OnDestroy {
     this.userFoundCards.forEach(word => {
       if (!userDuplicate) {
         if (!this.displayedTokens.includes(word)) {
-          userDuplicate = true;
+          if (word !== 'NLove') {
+            userDuplicate = true;
+          }
         }
       }
     });
